@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {PrimaryButton} from 'pivotal-ui/react/buttons';
+import {DefaultButton, PrimaryButton} from 'pivotal-ui/react/buttons';
 import {SuccessAlert} from 'pivotal-ui/react/alerts';
 import {Form} from 'pivotal-ui/react/forms';
 import {FlexCol, Grid} from 'pivotal-ui/react/flex-grids';
+import {DraggableList, DraggableListItem} from 'pivotal-ui/react/draggable-list';
 
 import {RSocketClient} from 'rsocket-core';
 import RSocketWebSocketClient from "rsocket-websocket-client";
@@ -20,7 +21,8 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            message: ''
+            message: '',
+            items: []
         };
         this.client = new RSocketClient({
             setup: {
@@ -71,6 +73,13 @@ export default class App extends Component {
                 dismissable
                 onDismiss={() => this.setState({message: ''})}
                 show={this.state.message.length > 0}>{this.state.message}</SuccessAlert>
+            <br/>
+            <DefaultButton onClick={() => this.datetime()}>Datetime</DefaultButton>
+            <br/>
+            <br/>
+            <DraggableList>
+                {this.state.items.map(i => <DraggableListItem key={i}>{i}</DraggableListItem>)}
+            </DraggableList>
         </div>
     }
 
@@ -97,6 +106,43 @@ export default class App extends Component {
                 that.setState({
                     message: body.message
                 })
+            },
+            onError: (e) => {
+                console.error('onError', e)
+            }
+        });
+    }
+
+    datetime() {
+        let that = this;
+        let maxInFlight = 64;
+        let current = maxInFlight;
+        let subscription;
+        this.socket && this.socket.requestStream({
+            data: JSON.stringify({}),
+            metadata: 'datetime'
+        }).subscribe({
+            onSubscribe: sub => {
+                subscription = sub;
+                console.log('request', maxInFlight);
+                subscription.request(maxInFlight);
+            },
+            onNext: (payload) => {
+                let body = JSON.parse(payload.data);
+                let items = that.state.items;
+                items.unshift(body.datetime);
+                while (items.length > 20) {
+                    items.pop();
+                }
+                that.setState({
+                    items: items
+                });
+                current--;
+                if (current === 0) {
+                    current = maxInFlight;
+                    console.log('request', maxInFlight);
+                    subscription.request(maxInFlight);
+                }
             },
             onError: (e) => {
                 console.error('onError', e)
