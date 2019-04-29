@@ -46,7 +46,7 @@ public class VanillaRsocketClientApplication {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             latch.countDown();
-            VanillaRsocketClientApplication.log.info("Shutdown");
+            log.info("Shutdown");
         }));
         latch.await();
         rsocket.dispose();
