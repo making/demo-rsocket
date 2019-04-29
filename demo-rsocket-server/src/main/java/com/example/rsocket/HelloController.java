@@ -14,6 +14,6 @@ public class HelloController {
     @MessageMapping("hello")
     public Mono<Map<String, String>> hello(Map<String, String> body) {
         String name = Objects.toString(body.get("name"), "No Name");
-        return Mono.just(Collections.singletonMap("message", "Hello " + name + "!"));
+        return Mono.just(Collections.singletonMap("message", "Hello " + name + "!")).log("hello");
     }
 }
