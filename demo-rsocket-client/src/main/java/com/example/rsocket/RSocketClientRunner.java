@@ -10,6 +10,7 @@ import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.retry.Retry;
 
 import java.io.IOException;
@@ -32,14 +33,21 @@ public class RSocketClientRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Flux<JsonNode> datetime = this.rsocketRequesterBuilder.connect(this.clientTransport, MimeTypeUtils.APPLICATION_JSON)
+        Mono<JsonNode> hello = this.rsocketRequesterBuilder
+            .connect(this.clientTransport, MimeTypeUtils.APPLICATION_JSON)
+            .flatMap(requester -> requester.route("hello")
+                .data(Collections.singletonMap("name", "Jane Doe"))
+                .retrieveMono(JsonNode.class))
+            .log("hello");
+        Flux<JsonNode> datetime = this.rsocketRequesterBuilder
+            .connect(this.clientTransport, MimeTypeUtils.APPLICATION_JSON)
             .flatMapMany(requester -> requester.route("datetime")
                 .data(Collections.singletonMap("zoneId", "Asia/Tokyo"))
                 .retrieveFlux(JsonNode.class))
             .retryWhen(Retry.anyOf(IOException.class)
                 .fixedBackoff(Duration.ofSeconds(1))
                 .doOnRetry(ctx -> log.warn("Retrying: {}", ctx)))
-            .log("consumer");
-        datetime.subscribe();
+            .log("datetime");
+        hello.and(datetime).subscribe();
     }
 }
