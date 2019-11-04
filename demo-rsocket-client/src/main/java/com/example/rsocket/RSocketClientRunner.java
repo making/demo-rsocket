@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.Collections;
 
 @Component
 public class RSocketClientRunner implements ApplicationRunner {
@@ -26,10 +25,9 @@ public class RSocketClientRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Mono<JsonNode> hello = this.requester.route("hello")
-            .data(Collections.singletonMap("name", "Jane Doe"))
+        Mono<JsonNode> greeting = this.requester.route("greeting/{name}", "Jane")
             .retrieveMono(JsonNode.class)
-            .log("hello");
-        hello.block();
+            .log("greeting");
+        greeting.block();
     }
 }
