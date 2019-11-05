@@ -9,7 +9,8 @@ export default class NameView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            items: []
+            items: [],
+            cancelable: false
         };
         this.nameClient = new NameClient({});
     }
@@ -22,7 +23,9 @@ export default class NameView extends Component {
                 onDismiss={() => this.setState({greeting: null})}
                 show={this.state.greeting != null}>{this.state.greeting && this.state.greeting.toString()}</SuccessAlert>
             <br/>
-            <DefaultButton onClick={() => this.names()}>Generate names</DefaultButton>
+            <DefaultButton onClick={() => this.state.cancelable ? this.cancel() : this.names()}>
+                {this.state.cancelable ? `Cancel` : `Generate names`}
+            </DefaultButton>
             <br/>
             <br/>
             <DraggableList>
@@ -41,8 +44,18 @@ export default class NameView extends Component {
         this.nameClient.disconnect();
     }
 
+    cancel() {
+        console.log('Cancelling...');
+        this.subscription.cancel();
+        this.setState({cancelable: false});
+    }
+
     names() {
         this.nameClient.names({
+            doOnSubscribe: subscription => {
+                this.subscription = subscription;
+                this.setState({cancelable: true});
+            },
             doOnNext: name => {
                 let items = this.state.items;
                 items.unshift(name);
@@ -54,14 +67,13 @@ export default class NameView extends Component {
                 });
             },
             doOnError: e => console.error('Failed to retrieve names', e),
-            doOnLastOfBatch: (subscription, maxInFlight) => {
+            doOnLastOfBatch: (maxInFlight) => {
                 setTimeout(() => {
                     console.log('request', maxInFlight);
-                    subscription.request(maxInFlight);
-                }, 1000);
+                    this.subscription.request(maxInFlight);
+                }, 100);
                 return maxInFlight;
             }
         });
     }
-
 }

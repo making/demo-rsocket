@@ -7,7 +7,7 @@ export default class NameClient extends BaseClient {
         this.maxInFlight = maxInFlight || 20;
     }
 
-    names({doOnNext, doOnError, doOnLastOfBatch}) {
+    names({doOnSubscribe, doOnNext, doOnError, doOnLastOfBatch}) {
         let current = this.maxInFlight;
         let subscription;
         if (!this.socket) {
@@ -21,13 +21,14 @@ export default class NameClient extends BaseClient {
                 subscription = sub;
                 console.log('request', this.maxInFlight);
                 subscription.request(this.maxInFlight);
+                doOnSubscribe(subscription);
             },
             onNext: (payload) => {
                 let body = JSON.parse(payload.data);
                 doOnNext(new Name(body));
                 current--;
                 if (current === 0) {
-                    current = doOnLastOfBatch(subscription, this.maxInFlight);
+                    current = doOnLastOfBatch(this.maxInFlight);
                 }
             },
             onError: (e) => doOnError(e)
