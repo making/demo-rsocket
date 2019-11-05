@@ -34,18 +34,22 @@ public class VanillaRsocketServerApplication {
         ServerTransport<?> transport = WebsocketServerTransport.create(HttpServer.from(TcpServer.create().host("localhost").port(port).wiretap(false)));
         final Disposable disposable = RSocketFactory.receive()
             .frameDecoder(PayloadDecoder.ZERO_COPY)
-            .acceptor((setup, sendingSocket) -> Mono.just(new AbstractRSocket() {
+            .acceptor((setup, sendingSocket) -> {
+                log.info("metadataMimeType={}", setup.metadataMimeType());
+                log.info("dataMimeType={}", setup.dataMimeType());
+                return Mono.just(new AbstractRSocket() {
 
-                @Override
-                public Mono<Payload> requestResponse(Payload payload) {
-                    return Mono.just(DefaultPayload.create(String.format(template, counter.incrementAndGet()))).log("hello");
-                }
+                    @Override
+                    public Mono<Payload> requestResponse(Payload payload) {
+                        return Mono.just(DefaultPayload.create(String.format(template, counter.incrementAndGet()))).log("hello");
+                    }
 
-                @Override
-                public Flux<Payload> requestStream(Payload payload) {
-                    return NameGenerator.stream().map(DefaultPayload::create);
-                }
-            }))
+                    @Override
+                    public Flux<Payload> requestStream(Payload payload) {
+                        return NameGenerator.stream().map(DefaultPayload::create);
+                    }
+                });
+            })
             .transport(transport)
             .start()
             .subscribe();
