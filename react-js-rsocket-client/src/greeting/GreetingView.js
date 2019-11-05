@@ -18,17 +18,12 @@ export default class GreetingView extends Component {
     render() {
         return <div>
             <Form {...{
-                onSubmit: ({initial, current}) => this.greet({name: `${current.firstName} ${current.lastName}`}),
+                onSubmit: ({initial, current}) => this.greet(current),
                 fields: {
-                    firstName: {
+                    name: {
                         initialValue: '',
-                        validator: currentValue => currentValue.length > 0 ? null : 'First Name must not be empty',
-                        label: 'First Name'
-                    },
-                    lastName: {
-                        initialValue: '',
-                        validator: currentValue => currentValue.length > 0 ? null : 'Last Name must not be empty',
-                        label: 'Last Name'
+                        validator: currentValue => currentValue.length > 0 ? null : 'Name must not be empty',
+                        label: 'Name'
                     }
                 }
             }}>
@@ -36,11 +31,10 @@ export default class GreetingView extends Component {
                     return (
                         <div>
                             <Grid>
-                                <FlexCol>{fields.firstName}</FlexCol>
-                                <FlexCol>{fields.lastName}</FlexCol>
+                                <FlexCol>{fields.name}</FlexCol>
                                 <FlexCol className="mtxxxl" fixed>
                                     <PrimaryButton type="submit"
-                                                   disabled={!canSubmit()}>Hello</PrimaryButton>
+                                                   disabled={!canSubmit()}>Greet</PrimaryButton>
                                 </FlexCol>
                             </Grid>
                         </div>
