@@ -8,8 +8,6 @@ import {DraggableList, DraggableListItem} from 'pivotal-ui/react/draggable-list'
 import {RSocketClient} from 'rsocket-core';
 import RSocketWebSocketClient from "rsocket-websocket-client";
 
-import './Greeting';
-
 import 'pivotal-ui/css/alignment';
 import 'pivotal-ui/css/positioning';
 import 'pivotal-ui/css/selection';
@@ -18,7 +16,8 @@ import 'pivotal-ui/css/vertical-alignment';
 import 'pivotal-ui/css/whitespace';
 
 import './App.css';
-import Greeting from "./Greeting";
+import Greeting from "./model/Greeting";
+import Name from './model/Name';
 
 export default class App extends Component {
     constructor(props) {
@@ -43,7 +42,7 @@ export default class App extends Component {
     render() {
         return <div>
             <Form {...{
-                onSubmit: ({initial, current}) => this.hello({name: current.firstName + ' ' + current.lastName}),
+                onSubmit: ({initial, current}) => this.hello({name: `${current.firstName} ${current.lastName}`}),
                 fields: {
                     firstName: {
                         initialValue: '',
@@ -83,7 +82,7 @@ export default class App extends Component {
             <br/>
             <br/>
             <DraggableList>
-                {this.state.items.map(i => <DraggableListItem key={i}>{i}</DraggableListItem>)}
+                {this.state.items.map(i => <DraggableListItem key={i.toString()}>{i.toString()}</DraggableListItem>)}
             </DraggableList>
         </div>
     }
@@ -135,7 +134,7 @@ export default class App extends Component {
             onNext: (payload) => {
                 let body = JSON.parse(payload.data);
                 let items = that.state.items;
-                items.unshift(`${body.lastName} ${body.firstName}`);
+                items.unshift(new Name(body));
                 while (items.length > 20) {
                     items.pop();
                 }
