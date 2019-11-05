@@ -1,8 +1,11 @@
 package com.example.vanillarsocketserver;
 
 import io.rsocket.AbstractRSocket;
+import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
+import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
+import io.rsocket.SocketAcceptor;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.WebsocketServerTransport;
@@ -24,32 +27,14 @@ public class VanillaRsocketServerApplication {
     private static final Logger log = LoggerFactory.getLogger(VanillaRsocketServerApplication.class);
 
 
-    static final String template = "{\"id\":%d,\"content\":\"Hello World!\"}";
-
     public static void main(String[] args) throws Exception {
         int port = Optional.ofNullable(System.getenv("PORT")).map(Integer::parseInt)
             .orElse(7000);
-        final AtomicInteger counter = new AtomicInteger(0);
         CountDownLatch latch = new CountDownLatch(1);
         ServerTransport<?> transport = WebsocketServerTransport.create(HttpServer.from(TcpServer.create().host("localhost").port(port).wiretap(false)));
         final Disposable disposable = RSocketFactory.receive()
             .frameDecoder(PayloadDecoder.ZERO_COPY)
-            .acceptor((setup, sendingSocket) -> {
-                log.info("metadataMimeType={}", setup.metadataMimeType());
-                log.info("dataMimeType={}", setup.dataMimeType());
-                return Mono.just(new AbstractRSocket() {
-
-                    @Override
-                    public Mono<Payload> requestResponse(Payload payload) {
-                        return Mono.just(DefaultPayload.create(String.format(template, counter.incrementAndGet()))).log("hello");
-                    }
-
-                    @Override
-                    public Flux<Payload> requestStream(Payload payload) {
-                        return NameGenerator.stream().map(DefaultPayload::create);
-                    }
-                });
-            })
+            .acceptor(new HelloResponder())
             .transport(transport)
             .start()
             .subscribe();
@@ -62,4 +47,28 @@ public class VanillaRsocketServerApplication {
         log.info("Bye");
     }
 
+    static class HelloResponder implements SocketAcceptor {
+
+        static final String template = "{\"id\":%d,\"content\":\"Hello World!\"}";
+
+        final AtomicInteger counter = new AtomicInteger(0);
+
+        @Override
+        public Mono<RSocket> accept(ConnectionSetupPayload setup, RSocket sendingSocket) {
+            log.info("metadataMimeType={}", setup.metadataMimeType());
+            log.info("dataMimeType={}", setup.dataMimeType());
+            return Mono.just(new AbstractRSocket() {
+
+                @Override
+                public Mono<Payload> requestResponse(Payload payload) {
+                    return Mono.just(DefaultPayload.create(String.format(template, counter.incrementAndGet()))).log("hello");
+                }
+
+                @Override
+                public Flux<Payload> requestStream(Payload payload) {
+                    return NameGenerator.stream().map(DefaultPayload::create);
+                }
+            });
+        }
+    }
 }
