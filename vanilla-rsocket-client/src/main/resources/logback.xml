@@ -7,5 +7,6 @@
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
-<!--    <logger name="reactor.netty" level="DEBUG"/>-->
+        <logger name="reactor.netty" level="DEBUG"/>
+    <logger name="io.rsocket.FrameLogger" level="DEBUG"/>
 </configuration>
