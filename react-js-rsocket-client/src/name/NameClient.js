@@ -4,7 +4,7 @@ import Name from './Name';
 export default class NameClient extends BaseClient {
     constructor({client, maxInFlight}) {
         super({client});
-        this.maxInFlight = maxInFlight || 20;
+        this.maxInFlight = maxInFlight || 8;
     }
 
     names({doOnSubscribe, doOnNext, doOnError, doOnLastOfBatch}) {
@@ -27,8 +27,11 @@ export default class NameClient extends BaseClient {
                 let body = JSON.parse(payload.data);
                 doOnNext(new Name(body));
                 current--;
+                console.log({current});
                 if (current === 0) {
-                    current = doOnLastOfBatch(this.maxInFlight);
+                    setTimeout(() => {
+                        current = doOnLastOfBatch();
+                    }, 300);
                 }
             },
             onError: (e) => doOnError(e)

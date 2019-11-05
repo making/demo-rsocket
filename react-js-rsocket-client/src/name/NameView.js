@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {DefaultButton} from 'pivotal-ui/react/buttons';
-import {SuccessAlert} from 'pivotal-ui/react/alerts';
 import {DraggableList, DraggableListItem} from 'pivotal-ui/react/draggable-list';
+import {Input} from 'pivotal-ui/react/inputs';
 
 import NameClient from "./NameClient";
 
@@ -10,18 +10,19 @@ export default class NameView extends Component {
         super(props);
         this.state = {
             items: [],
-            cancelable: false
+            cancelable: false,
+            maxInFlight: 8
         };
-        this.nameClient = new NameClient({});
+        this.nameClient = new NameClient({maxInFlight: this.state.maxInFlight});
     }
 
     render() {
         return <div>
-            <SuccessAlert
-                withIcon
-                dismissable
-                onDismiss={() => this.setState({greeting: null})}
-                show={this.state.greeting != null}>{this.state.greeting && this.state.greeting.toString()}</SuccessAlert>
+            Request: <Input type="number"
+                            pattern="\d*"
+                            style={{width: "4em"}}
+                            value={this.state.maxInFlight}
+                            onChange={(e) => this.setState({maxInFlight: Math.max(1, Math.min(Number(e.target.value), 256))})}/>
             <br/>
             <DefaultButton onClick={() => this.state.cancelable ? this.cancel() : this.names()}>
                 {this.state.cancelable ? `Cancel` : `Generate names`}
@@ -29,7 +30,7 @@ export default class NameView extends Component {
             <br/>
             <br/>
             <DraggableList>
-                {this.state.items.map(i => <DraggableListItem key={i.toString()}>{i.toString()}</DraggableListItem>)}
+                {this.state.items.map(name => <DraggableListItem key={name.getId()}>{name.toString()}</DraggableListItem>)}
             </DraggableList>
         </div>
     }
@@ -45,7 +46,6 @@ export default class NameView extends Component {
     }
 
     cancel() {
-        console.log('Cancelling...');
         this.subscription.cancel();
         this.setState({cancelable: false});
     }
@@ -67,12 +67,9 @@ export default class NameView extends Component {
                 });
             },
             doOnError: e => console.error('Failed to retrieve names', e),
-            doOnLastOfBatch: (maxInFlight) => {
-                setTimeout(() => {
-                    console.log('request', maxInFlight);
-                    this.subscription.request(maxInFlight);
-                }, 100);
-                return maxInFlight;
+            doOnLastOfBatch: () => {
+                this.subscription.request(this.state.maxInFlight);
+                return this.state.maxInFlight;
             }
         });
     }
