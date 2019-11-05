@@ -16,8 +16,8 @@ import 'pivotal-ui/css/vertical-alignment';
 import 'pivotal-ui/css/whitespace';
 
 import './App.css';
-import Greeting from "./model/Greeting";
-import Name from './model/Name';
+import Greeting from "./greeting/Greeting";
+import Name from './name/Name';
 
 export default class App extends Component {
     constructor(props) {
