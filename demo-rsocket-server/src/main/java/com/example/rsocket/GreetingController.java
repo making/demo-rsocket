@@ -14,7 +14,7 @@ public class GreetingController {
 
     private final AtomicLong counter = new AtomicLong();
 
-    @MessageMapping("greeting/{name}")
+    @MessageMapping("greeting.{name}")
     public Mono<Greeting> hello(@DestinationVariable("name") String name) {
         return Mono.fromCallable(this.counter::incrementAndGet)
             .map(i -> new Greeting(i, String.format(template, name)))

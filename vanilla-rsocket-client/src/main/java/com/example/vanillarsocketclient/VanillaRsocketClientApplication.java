@@ -36,7 +36,7 @@ public class VanillaRsocketClientApplication {
             .start()
             .block();
 
-        Mono<String> hello = rsocket.requestResponse(DefaultPayload.create(DefaultPayload.EMPTY_BUFFER, routingMetadata("greeting/Jane")))
+        Mono<String> hello = rsocket.requestResponse(DefaultPayload.create(DefaultPayload.EMPTY_BUFFER, routingMetadata("greeting.Jane")))
             .map(Payload::getDataUtf8)
             .log("hello");
 

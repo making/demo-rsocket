@@ -10,7 +10,7 @@ export default class GreetingClient extends BaseClient {
             }
             this.socket.requestResponse({
                 data: JSON.stringify({}),
-                metadata: this.routingMetadata(`greeting/${name}`)
+                metadata: this.routingMetadata(`greeting.${name}`)
             }).subscribe({
                 onComplete: payload => resolve(new Greeting(JSON.parse(payload.data))),
                 onError: (e) => reject(e)

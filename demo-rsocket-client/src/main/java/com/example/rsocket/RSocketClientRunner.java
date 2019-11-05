@@ -25,7 +25,7 @@ public class RSocketClientRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Mono<JsonNode> greeting = this.requester.route("greeting/{name}", "Jane")
+        Mono<JsonNode> greeting = this.requester.route("greeting.{name}", "Jane")
             .retrieveMono(JsonNode.class)
             .log("greeting");
         greeting.block();
