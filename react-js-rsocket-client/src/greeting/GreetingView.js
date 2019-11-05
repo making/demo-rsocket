@@ -4,9 +4,6 @@ import {SuccessAlert} from 'pivotal-ui/react/alerts';
 import {Form} from 'pivotal-ui/react/forms';
 import {FlexCol, Grid} from 'pivotal-ui/react/flex-grids';
 
-import {RSocketClient} from 'rsocket-core';
-import RSocketWebSocketClient from "rsocket-websocket-client";
-
 import GreetingClient from "./GreetingClient";
 
 export default class GreetingView extends Component {
@@ -15,23 +12,7 @@ export default class GreetingView extends Component {
         this.state = {
             greeting: null,
         };
-        this.greetingClient = new GreetingClient({
-            client: this.createRSocketClient()
-        });
-    }
-
-    createRSocketClient() {
-        return new RSocketClient({
-            setup: {
-                // ms btw sending keepalive to server
-                keepAlive: 10000,
-                // ms timeout if no keepalive response
-                lifetime: 20000,
-                dataMimeType: 'application/json',
-                metadataMimeType: 'message/x.rsocket.routing.v0'
-            },
-            transport: new RSocketWebSocketClient({url: 'ws://localhost:7000/rsocket'}),
-        });
+        this.greetingClient = new GreetingClient({});
     }
 
     render() {
