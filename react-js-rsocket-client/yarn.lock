@@ -3022,11 +3022,6 @@ core-js@3.0.1:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.0.1.tgz#1343182634298f7f38622f95e73f54e48ddf4738"
   integrity sha512-sco40rF+2KlE0ROMvydjkrVMMG1vYilP2ALoRXcYR4obqbYIuV3Bg+51GEDW+HF8n7NRA+iaA4qD0nD9lo9mew==
 
-core-js@^1.0.0:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
-  integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
-
 core-js@^2.4.0, core-js@^2.4.1:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.5.tgz#44bc8d249e7fb2ff5d00e0341a7ffb94fbf67895"
@@ -4263,19 +4258,6 @@ fbjs-css-vars@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/fbjs-css-vars/-/fbjs-css-vars-1.0.2.tgz#216551136ae02fe255932c3ec8775f18e2c078b8"
   integrity sha512-b2XGFAFdWZWg0phtAWLHCk836A1Xann+I+Dgd3Gk64MHKZO44FfoD1KxyvbSh0qZsIoXQGGlVztIY+oitJPpRQ==
-
-fbjs@^0.8.12:
-  version "0.8.17"
-  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
-  integrity sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
-  dependencies:
-    core-js "^1.0.0"
-    isomorphic-fetch "^2.1.1"
-    loose-envify "^1.0.0"
-    object-assign "^4.1.0"
-    promise "^7.1.1"
-    setimmediate "^1.0.5"
-    ua-parser-js "^0.7.18"
 
 fbjs@^1.0.0:
   version "1.0.0"
@@ -6394,7 +6376,7 @@ lodash._isiterateecall@^3.0.0:
   resolved "https://registry.yarnpkg.com/lodash._isiterateecall/-/lodash._isiterateecall-3.0.9.tgz#5203ad7ba425fae842460e696db9cf3e6aac057c"
   integrity sha1-UgOte6Ql+uhCRg5pbbnPPmqsBXw=
 
-lodash._reinterpolate@~3.0.0:
+lodash._reinterpolate@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
   integrity sha1-DM8tiRZq8Ds2Y8eWU4t1rG4RTZ0=
@@ -6491,19 +6473,19 @@ lodash.tail@^4.1.1:
   integrity sha1-0jM6NtnncXyK0vfKyv7HwytERmQ=
 
 lodash.template@^4.2.4, lodash.template@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/lodash.template/-/lodash.template-4.4.0.tgz#e73a0385c8355591746e020b99679c690e68fba0"
-  integrity sha1-5zoDhcg1VZF0bgILmWecaQ5o+6A=
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.template/-/lodash.template-4.5.0.tgz#f976195cf3f347d0d5f52483569fe8031ccce8ab"
+  integrity sha512-84vYFxIkmidUiFxidA/KjjH9pAycqW+h980j7Fuz5qxRtO9pgB7MDFTdys1N7A5mcucRiDyEq4fusljItR1T/A==
   dependencies:
-    lodash._reinterpolate "~3.0.0"
+    lodash._reinterpolate "^3.0.0"
     lodash.templatesettings "^4.0.0"
 
 lodash.templatesettings@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/lodash.templatesettings/-/lodash.templatesettings-4.1.0.tgz#2b4d4e95ba440d915ff08bc899e4553666713316"
-  integrity sha1-K01OlbpEDZFf8IvImeRVNmZxMxY=
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.templatesettings/-/lodash.templatesettings-4.2.0.tgz#e481310f049d3cf6d47e912ad09313b154f0fb33"
+  integrity sha512-stgLz+i3Aa9mZgnjr/O+v9ruKZsPsndy7qPZOchbqk2cnTU1ZaldKK+v7m54WoKIyxiuMZTKT2H81F8BeAc3ZQ==
   dependencies:
-    lodash._reinterpolate "~3.0.0"
+    lodash._reinterpolate "^3.0.0"
 
 lodash.throttle@^3.0.2:
   version "3.0.4"
@@ -9068,40 +9050,40 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rsocket-core@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.10.tgz#937b2d1e562e80e86e20fea445be37e0e2f88962"
-  integrity sha512-u7PolLWw2yP2l/xLUegfr0YhfYorbw+gk98QeKSb8c8Qe+1/jTuwgKI/hfFvkHkx9ByrX8FFNv64EsPDcbcfvA==
+rsocket-core@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/rsocket-core/-/rsocket-core-0.0.16.tgz#0a823877bcb7769ad479c9b609cc5dd6c8389b50"
+  integrity sha512-mzA5yhSxO5BaAGqpaTzmZBhQD/Ig2Uez/I2KTYGQu8fGlzYhyCv+QHmt9dQ4qkGu1bqBkR/nSD6NtyY/CIfGgw==
   dependencies:
-    fbjs "^0.8.12"
-    rsocket-flowable "^0.0.10"
-    rsocket-types "^0.0.10"
+    fbjs "^1.0.0"
+    rsocket-flowable "^0.0.14"
+    rsocket-types "^0.0.16"
 
-rsocket-flowable@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.10.tgz#6e02f87145fde0d73b165f37b98bd39e7a95b50d"
-  integrity sha512-H8DWjne8atb1wtQ7cFhQV1Rq6MmRGniqaP6x8zM1avx2qt4SfyQDC9BlKRMDcwxkqt03MHz9MzYKsWfV44lUDg==
+rsocket-flowable@^0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/rsocket-flowable/-/rsocket-flowable-0.0.14.tgz#5195dbd2972a98afe4a4ee082904fbc5890bc630"
+  integrity sha512-vK85yDj0DRpoTV1jQZF0JmSuQz4qj2DHMyV744I9h/8AP5jVJhuN1D+ArKQvP0VWXjFoRK23ObVMnoSdSkk4pg==
   dependencies:
-    fbjs "^0.8.12"
+    fbjs "^1.0.0"
 
-rsocket-types@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-types/-/rsocket-types-0.0.10.tgz#5065fc0d8d7531fbf71aad330370b6adbbc7a97b"
-  integrity sha512-EO0iSSt5AOvEysUtA0Fm0i+pNWNcPIDLPAD0kP8Tk/IwYGyr303USF+1n2H9wuLMqqBQwWSv5E/VG46TztZJdg==
+rsocket-types@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/rsocket-types/-/rsocket-types-0.0.16.tgz#2113dcf8e25478d6764f1e3e84ad4a97d16a6fde"
+  integrity sha512-zOJ2u5bgooj8QewqoIoaeEn1FHDZSyHp7VuDSiEJAAjTTQpYyEqKpLTvqi+tazRCBOTfulMBijootTI18VVeIg==
   dependencies:
     buffer "^5.0.6"
-    fbjs "^0.8.12"
-    rsocket-flowable "^0.0.10"
+    fbjs "^1.0.0"
+    rsocket-flowable "^0.0.14"
 
-rsocket-websocket-client@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rsocket-websocket-client/-/rsocket-websocket-client-0.0.10.tgz#2e1379dd017125cbe46a64a15986241f18e9d2df"
-  integrity sha512-l/BTSgfhL/Cg4mCCRcYq3IP/oagWY+HJJKRWAtzOHFJs/W1/MYajmJCzdIqp5czrGnUwQ3JSLvShGeknNLwNdQ==
+rsocket-websocket-client@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/rsocket-websocket-client/-/rsocket-websocket-client-0.0.16.tgz#dbeb6e1bab254ff0844a98631009c3c9e9a84117"
+  integrity sha512-qSBzDnoCH4bxvZmmzz8e53TzAQpWt/HaZcWy4xzcVQf0PM3nsiDUWJ2ktCaQBRKLTwUywesu9/hzu8aI6QpbNg==
   dependencies:
-    fbjs "^0.8.12"
-    rsocket-core "^0.0.10"
-    rsocket-flowable "^0.0.10"
-    rsocket-types "^0.0.10"
+    fbjs "^1.0.0"
+    rsocket-core "^0.0.16"
+    rsocket-flowable "^0.0.14"
+    rsocket-types "^0.0.16"
 
 rsvp@^4.8.4:
   version "4.8.4"
