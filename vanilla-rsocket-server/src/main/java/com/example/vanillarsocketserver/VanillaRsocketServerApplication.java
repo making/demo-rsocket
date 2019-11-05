@@ -10,6 +10,7 @@ import io.rsocket.util.DefaultPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.TcpServer;
@@ -38,6 +39,11 @@ public class VanillaRsocketServerApplication {
                 @Override
                 public Mono<Payload> requestResponse(Payload payload) {
                     return Mono.just(DefaultPayload.create(String.format(template, counter.incrementAndGet()))).log("hello");
+                }
+
+                @Override
+                public Flux<Payload> requestStream(Payload payload) {
+                    return NameGenerator.stream().map(DefaultPayload::create);
                 }
             }))
             .transport(transport)
