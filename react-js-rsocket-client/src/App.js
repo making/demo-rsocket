@@ -16,8 +16,8 @@ import 'pivotal-ui/css/vertical-alignment';
 import 'pivotal-ui/css/whitespace';
 
 import './App.css';
-import Greeting from "./greeting/Greeting";
-import Name from './name/Name';
+import GreetingClient from "./greeting/GreetingClient";
+import NameClient from "./name/NameClient";
 
 export default class App extends Component {
     constructor(props) {
@@ -26,7 +26,16 @@ export default class App extends Component {
             greeting: null,
             items: []
         };
-        this.client = new RSocketClient({
+        this.greetingClient = new GreetingClient({
+            client: this.createRSocketClient()
+        });
+        this.nameClient = new NameClient({
+            client: this.createRSocketClient()
+        });
+    }
+
+    createRSocketClient() {
+        return new RSocketClient({
             setup: {
                 // ms btw sending keepalive to server
                 keepAlive: 10000,
@@ -42,7 +51,7 @@ export default class App extends Component {
     render() {
         return <div>
             <Form {...{
-                onSubmit: ({initial, current}) => this.hello({name: `${current.firstName} ${current.lastName}`}),
+                onSubmit: ({initial, current}) => this.greet({name: `${current.firstName} ${current.lastName}`}),
                 fields: {
                     firstName: {
                         initialValue: '',
@@ -88,76 +97,46 @@ export default class App extends Component {
     }
 
     componentDidMount() {
-        this.client.connect()
-            .subscribe({
-                onComplete: socket => {
-                    this.socket = socket;
-                },
-                onError: error => console.error(error),
-                onSubscribe: cancel => {/* call cancel() to abort */
-                }
-            });
+        this.greetingClient
+            .connect()
+            .catch(e => console.error('Failed to connect', e));
+        this.nameClient
+            .connect()
+            .catch(e => console.error('Failed to connect', e));
     }
 
-    hello(request) {
-        let that = this;
-        this.socket && this.socket.requestResponse({
-            data: JSON.stringify({}),
-            metadata: routingMetadata(`greeting/${request.name}`)
-        }).subscribe({
-            onComplete(payload) {
-                let body = JSON.parse(payload.data);
-                that.setState({
-                    greeting: new Greeting(body)
-                })
-            },
-            onError: (e) => {
-                console.error('onError', e)
-            }
-        });
+    componentWillUnmount() {
+        this.greetingClient.disconnect();
+        this.nameClient.disconnect();
+    }
+
+    greet(request) {
+        this.greetingClient.greet(request.name)
+            .then(greeting => this.setState({greeting: greeting}))
+            .catch(e => console.error('Failed to greet', e));
     }
 
     names() {
-        let that = this;
-        let maxInFlight = 20;
-        let current = maxInFlight;
-        let subscription;
-        this.socket && this.socket.requestStream({
-            data: JSON.stringify({}),
-            metadata: routingMetadata('name')
-        }).subscribe({
-            onSubscribe: sub => {
-                subscription = sub;
-                console.log('request', maxInFlight);
-                subscription.request(maxInFlight);
-            },
-            onNext: (payload) => {
-                let body = JSON.parse(payload.data);
-                let items = that.state.items;
-                items.unshift(new Name(body));
+        this.nameClient.names({
+            doOnNext: name => {
+                let items = this.state.items;
+                items.unshift(name);
                 while (items.length > 20) {
                     items.pop();
                 }
-                that.setState({
+                this.setState({
                     items: items
                 });
-                current--;
-                if (current === 0) {
-                    current = maxInFlight;
-                    console.log('request', maxInFlight);
-                    setTimeout(() => {
-                        subscription.request(maxInFlight);
-                    }, 1000);
-                }
             },
-            onError: (e) => {
-                console.error('onError', e)
+            doOnError: e => console.error('Failed to retrieve names', e),
+            doOnLastOfBatch: (subscription, maxInFlight) => {
+                setTimeout(() => {
+                    console.log('request', maxInFlight);
+                    subscription.request(maxInFlight);
+                }, 1000);
+                return maxInFlight;
             }
         });
     }
 
-}
-
-function routingMetadata(route) {
-    return String.fromCharCode(route.length) + route;
 }
