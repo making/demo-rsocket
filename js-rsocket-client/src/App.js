@@ -8,6 +8,8 @@ import {DraggableList, DraggableListItem} from 'pivotal-ui/react/draggable-list'
 import {RSocketClient} from 'rsocket-core';
 import RSocketWebSocketClient from "rsocket-websocket-client";
 
+import './Greeting';
+
 import 'pivotal-ui/css/alignment';
 import 'pivotal-ui/css/positioning';
 import 'pivotal-ui/css/selection';
@@ -16,20 +18,23 @@ import 'pivotal-ui/css/vertical-alignment';
 import 'pivotal-ui/css/whitespace';
 
 import './App.css';
+import Greeting from "./Greeting";
 
 export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            message: '',
+            greeting: null,
             items: []
         };
         this.client = new RSocketClient({
             setup: {
-                keepAlive: 60000,
-                lifetime: 180000,
+                // ms btw sending keepalive to server
+                keepAlive: 10000,
+                // ms timeout if no keepalive response
+                lifetime: 20000,
                 dataMimeType: 'application/json',
-                metadataMimeType: 'text/plain'
+                metadataMimeType: 'message/x.rsocket.routing.v0'
             },
             transport: new RSocketWebSocketClient({url: 'ws://localhost:7000/rsocket'}),
         });
@@ -71,10 +76,10 @@ export default class App extends Component {
             <SuccessAlert
                 withIcon
                 dismissable
-                onDismiss={() => this.setState({message: ''})}
-                show={this.state.message.length > 0}>{this.state.message}</SuccessAlert>
+                onDismiss={() => this.setState({greeting: null})}
+                show={this.state.greeting != null}>{this.state.greeting && this.state.greeting.toString()}</SuccessAlert>
             <br/>
-            <DefaultButton onClick={() => this.datetime()}>Datetime</DefaultButton>
+            <DefaultButton onClick={() => this.names()}>Generate names</DefaultButton>
             <br/>
             <br/>
             <DraggableList>
@@ -98,13 +103,13 @@ export default class App extends Component {
     hello(request) {
         let that = this;
         this.socket && this.socket.requestResponse({
-            data: JSON.stringify(request),
-            metadata: 'hello'
+            data: JSON.stringify({}),
+            metadata: routingMetadata(`greeting/${request.name}`)
         }).subscribe({
             onComplete(payload) {
                 let body = JSON.parse(payload.data);
                 that.setState({
-                    message: body.message
+                    greeting: new Greeting(body)
                 })
             },
             onError: (e) => {
@@ -113,14 +118,14 @@ export default class App extends Component {
         });
     }
 
-    datetime() {
+    names() {
         let that = this;
-        let maxInFlight = 64;
+        let maxInFlight = 20;
         let current = maxInFlight;
         let subscription;
         this.socket && this.socket.requestStream({
             data: JSON.stringify({}),
-            metadata: 'datetime'
+            metadata: routingMetadata('name')
         }).subscribe({
             onSubscribe: sub => {
                 subscription = sub;
@@ -130,7 +135,7 @@ export default class App extends Component {
             onNext: (payload) => {
                 let body = JSON.parse(payload.data);
                 let items = that.state.items;
-                items.unshift(body.datetime);
+                items.unshift(`${body.lastName} ${body.firstName}`);
                 while (items.length > 20) {
                     items.pop();
                 }
@@ -141,7 +146,9 @@ export default class App extends Component {
                 if (current === 0) {
                     current = maxInFlight;
                     console.log('request', maxInFlight);
-                    subscription.request(maxInFlight);
+                    setTimeout(() => {
+                        subscription.request(maxInFlight);
+                    }, 1000);
                 }
             },
             onError: (e) => {
@@ -149,4 +156,9 @@ export default class App extends Component {
             }
         });
     }
+
+}
+
+function routingMetadata(route) {
+    return String.fromCharCode(route.length) + route;
 }
