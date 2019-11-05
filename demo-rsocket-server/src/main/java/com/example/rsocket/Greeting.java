@@ -1,5 +1,7 @@
 package com.example.rsocket;
 
+import java.util.StringJoiner;
+
 public class Greeting {
 
     private final long id;
@@ -17,5 +19,13 @@ public class Greeting {
 
     public String getContent() {
         return content;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Greeting.class.getSimpleName() + "[", "]")
+            .add("id=" + id)
+            .add("content='" + content + "'")
+            .toString();
     }
 }

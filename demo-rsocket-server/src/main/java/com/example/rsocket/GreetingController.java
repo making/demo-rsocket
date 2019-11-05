@@ -16,6 +16,8 @@ public class GreetingController {
 
     @MessageMapping("greeting/{name}")
     public Mono<Greeting> hello(@DestinationVariable("name") String name) {
-        return Mono.just(new Greeting(this.counter.incrementAndGet(), String.format(template, name)));
+        return Mono.fromCallable(this.counter::incrementAndGet)
+            .map(i -> new Greeting(i, String.format(template, name)))
+            .log("greeting");
     }
 }
