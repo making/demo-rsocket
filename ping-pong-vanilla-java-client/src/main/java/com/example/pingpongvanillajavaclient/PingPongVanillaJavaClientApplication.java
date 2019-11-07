@@ -4,6 +4,7 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.transport.ClientTransport;
+import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
 import org.slf4j.Logger;
@@ -19,10 +20,9 @@ public class PingPongVanillaJavaClientApplication {
 
     public static void main(String[] args) throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        ClientTransport transport = WebsocketClientTransport.create(HttpClient.from(TcpClient.create().host("localhost").port(9999).wiretap(false)), "/rsocket");
         RSocket rsocket = RSocketFactory.connect()
             .acceptor(new ClientAcceptor())
-            .transport(transport)
+            .transport(TcpClientTransport.create(9999))
             .start()
             .block();
 
