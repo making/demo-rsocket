@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package com.example.demorsocketrpc;
+
+option java_package = "com.example.pingpong";
+option java_outer_classname = "PingPongServiceProto";
+option java_multiple_files = true;
+
+service PingPongService {
+    // Request / Response
+    rpc Ping (PingRequest) returns (PongResponse) {
+    }
+}
+
+message PingRequest {
+    string message = 1;
+}
+
+message PongResponse {
+    string message = 1;
+}
