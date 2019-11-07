@@ -5,11 +5,13 @@ import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
 @ConfigurationProperties(prefix = "producer")
 @ConstructorBinding
+@Component
 public class DemoConfig {
 
     private final String host;
