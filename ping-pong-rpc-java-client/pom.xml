@@ -17,7 +17,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<protoc.version>3.7.1</protoc.version>
-		<rsocket-rpc.version>0.2.10</rsocket-rpc.version>
+		<rsocket-rpc.version>0.2.19</rsocket-rpc.version>
 	</properties>
 
 	<dependencies>
@@ -110,6 +110,11 @@
 	</build>
 
 	<repositories>
+		<repository>
+			<id>jfrog-release</id>
+			<name>JFrog Release</name>
+			<url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+		</repository>
 		<repository>
 			<id>spring-snapshots</id>
 			<name>Spring Snapshots</name>
