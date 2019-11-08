@@ -13,8 +13,7 @@ function App() {
     const lifetime = 360000 /* 360s in ms */;
     const transport = new RSocketWebSocketClient({url: 'ws://localhost:9999'}, BufferEncoders);
     const rsocketClient = new RpcClient({setup: {keepAlive, lifetime}, transport, responder});
-    const pingRequest = new PingRequest();
-    pingRequest.setMessage('PING');
+    const pingRequest = new PingRequest().setMessage('PING');
 
     let pongServiceClient = null;
     rsocketClient.connect()
