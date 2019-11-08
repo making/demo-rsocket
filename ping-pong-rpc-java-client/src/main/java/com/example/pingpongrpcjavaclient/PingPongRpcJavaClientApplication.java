@@ -7,7 +7,7 @@ import com.example.pingpong.PongResponse;
 import io.netty.buffer.ByteBufAllocator;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
-import io.rsocket.transport.netty.client.TcpClientTransport;
+import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CountDownLatch;
@@ -17,7 +17,7 @@ public class PingPongRpcJavaClientApplication {
     public static void main(String[] args) throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         RSocket rsocket = RSocketFactory.connect()
-            .transport(TcpClientTransport.create(9999))
+            .transport(WebsocketClientTransport.create(9999))
             .start()
             .block();
 

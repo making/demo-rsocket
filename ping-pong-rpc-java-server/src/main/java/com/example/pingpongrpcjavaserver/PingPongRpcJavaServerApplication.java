@@ -5,6 +5,7 @@ import com.example.pingpong.PingPongServiceServer;
 import io.rsocket.RSocketFactory;
 import io.rsocket.rpc.rsocket.RequestHandlingRSocket;
 import io.rsocket.transport.netty.server.TcpServerTransport;
+import io.rsocket.transport.netty.server.WebsocketServerTransport;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +20,7 @@ public class PingPongRpcJavaServerApplication {
         final PingPongServiceServer server = new PingPongServiceServer(pingPongService, Optional.empty(), Optional.empty());
         final Disposable disposable = RSocketFactory.receive()
             .acceptor((setup, sendingSocket) -> Mono.just(new RequestHandlingRSocket(server)))
-            .transport(TcpServerTransport.create(9999))
+            .transport(WebsocketServerTransport.create(9999))
             .start()
             .subscribe();
 
