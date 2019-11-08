@@ -1,0 +1,39 @@
+{
+  "name": "ping-pong-rpc-react-js-client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "google-protobuf": "^3.10.0",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-scripts": "3.2.0",
+    "rsocket-core": "^0.0.16",
+    "rsocket-rpc-core": "^0.1.6",
+    "rsocket-rpc-metrics": "^0.1.6",
+    "rsocket-rpc-protobuf": "^0.1.6",
+    "rsocket-rpc-tracing": "^0.1.6",
+    "rsocket-websocket-client": "^0.0.16"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "protoc": "protoc --proto_path=../ping-pong-rpc-idl/src/main/proto --proto_path=node_modules/rsocket-rpc-protobuf/proto --js_out=import_style=commonjs,binary:src/proto --rsocket_rpc_out=src/proto --plugin=protoc-gen-rsocket_rpc=node_modules/.bin/rsocket_rpc_js_protoc_plugin ../ping-pong-rpc-idl/src/main/proto/pingpong.proto"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
