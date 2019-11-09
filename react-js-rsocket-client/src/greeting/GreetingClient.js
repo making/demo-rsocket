@@ -3,7 +3,6 @@ import Greeting from "./Greeting";
 
 export default class GreetingClient extends BaseClient {
     async greet(name) {
-        console.log(this.socket);
         if (!this.socket) {
             throw new Error('RSocket is not connected!');
         }
