@@ -5,6 +5,7 @@ import {RequestHandlingRSocket, RpcClient} from "rsocket-rpc-core";
 import RSocketWebSocketClient from "rsocket-websocket-client";
 import {BufferEncoders} from "rsocket-core";
 import {PingPongServiceClient} from "./proto/pingpong_rsocket_pb";
+import {Single} from 'rsocket-flowable';
 
 class App extends Component {
     constructor(props) {
@@ -19,48 +20,17 @@ class App extends Component {
         };
     }
 
-    componentDidMount() {
-        this.connect()
-            .then(socket => this.pingPongClient = new PingPongServiceClient(socket));
+    async componentDidMount() {
+        const socket = await this.client.connect().toPromise();
+        this.pingPongClient = new PingPongServiceClient(socket);
     }
 
-    connect() {
-        return new Promise((resolve, reject) => {
-            this.client.connect()
-                .subscribe({
-                    onComplete: socket => {
-                        this.socket = socket;
-                        resolve(this.socket);
-                    },
-                    onError: error => {
-                        console.error('Failed to connect!', error);
-                        reject(error);
-                    },
-                    onSubscribe: cancel => {
-                        this.cancel = cancel
-                    }
-                });
-        });
-    }
-
-    ping() {
+    async ping() {
         this.setState({
             message: '...'
         });
-        if (!this.socket._machine._connectionAvailability) {
-            alert('Connection is closed.');
-            return;
-        }
-        this.pingPongClient
-            .ping(new PingRequest().setMessage('PING'))
-            .subscribe({
-                    onComplete: data => this.setState({message: data.getMessage()}),
-                    onError: error => {
-                        console.error('Failed to ping!', error);
-                        alert('Failed to ping!');
-                    }
-                }
-            );
+        const data = await this.pingPongClient.ping(new PingRequest().setMessage('PING')).toPromise();
+        this.setState({message: data.getMessage()});
     }
 
     render() {
@@ -72,5 +42,19 @@ class App extends Component {
         );
     }
 }
+
+Single.prototype.toPromise = function (onSubscribe) {
+    return new Promise((resolve, reject) => {
+        this.subscribe({
+            onComplete: data => resolve(data),
+            onError: error => reject(error),
+            onSubscribe: cancel => {
+                if (onSubscribe) {
+                    onSubscribe(cancel);
+                }
+            }
+        });
+    });
+};
 
 export default App;
