@@ -21,7 +21,7 @@ class App extends Component {
     }
 
     async componentDidMount() {
-        const socket = await this.client.connect().toPromise();
+        const socket = await this.client.connect();
         this.pingPongClient = new PingPongServiceClient(socket);
     }
 
@@ -29,7 +29,7 @@ class App extends Component {
         this.setState({
             message: '...'
         });
-        const data = await this.pingPongClient.ping(new PingRequest().setMessage('PING')).toPromise();
+        const data = await this.pingPongClient.ping(new PingRequest().setMessage('PING'));
         this.setState({message: data.getMessage()});
     }
 
@@ -43,17 +43,13 @@ class App extends Component {
     }
 }
 
-Single.prototype.toPromise = function (onSubscribe) {
-    return new Promise((resolve, reject) => {
-        this.subscribe({
-            onComplete: data => resolve(data),
-            onError: error => reject(error),
-            onSubscribe: cancel => {
-                if (onSubscribe) {
-                    onSubscribe(cancel);
-                }
-            }
-        });
+Single.prototype.then = function (resolve, reject) {
+    this.subscribe({
+        onComplete: data => resolve(data),
+        onError: error => reject(error),
+        onSubscribe: cancel => {
+            /* Can't implement onSubscribe in Thenable interface :( */
+        }
     });
 };
 
