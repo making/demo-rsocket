@@ -27,7 +27,6 @@ export default class NameClient extends BaseClient {
                 let body = JSON.parse(payload.data);
                 doOnNext(new Name(body));
                 current--;
-                console.log({current});
                 if (current === 0) {
                     setTimeout(() => {
                         current = doOnLastOfBatch();
