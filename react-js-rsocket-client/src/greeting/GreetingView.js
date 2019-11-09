@@ -51,18 +51,15 @@ export default class GreetingView extends Component {
     }
 
     componentDidMount() {
-        this.greetingClient
-            .connect()
-            .catch(e => console.error('Failed to connect', e));
+        this.greetingClient.connect();
     }
 
     componentWillUnmount() {
         this.greetingClient.disconnect();
     }
 
-    greet(request) {
-        this.greetingClient.greet(request.name)
-            .then(greeting => this.setState({greeting: greeting}))
-            .catch(e => console.error('Failed to greet', e));
+    async greet(request) {
+        const greeting = await this.greetingClient.greet(request.name);
+        this.setState({greeting: greeting});
     }
 }
