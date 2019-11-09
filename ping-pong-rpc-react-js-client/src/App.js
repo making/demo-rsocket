@@ -29,8 +29,8 @@ class App extends Component {
         this.setState({
             message: '...'
         });
-        const data = await this.pingPongClient.ping(new PingRequest().setMessage('PING'));
-        this.setState({message: data.getMessage()});
+        const response = await this.pingPongClient.ping(new PingRequest().setMessage('PING'));
+        this.setState({message: response.getMessage()});
     }
 
     render() {
