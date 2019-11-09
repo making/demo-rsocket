@@ -5,7 +5,6 @@ import {RequestHandlingRSocket, RpcClient} from "rsocket-rpc-core";
 import RSocketWebSocketClient from "rsocket-websocket-client";
 import {BufferEncoders} from "rsocket-core";
 import {PingPongServiceClient} from "./proto/pingpong_rsocket_pb";
-import {Single} from 'rsocket-flowable';
 
 class App extends Component {
     constructor(props) {
@@ -42,15 +41,5 @@ class App extends Component {
         );
     }
 }
-
-Single.prototype.then = function (resolve, reject) {
-    this.subscribe({
-        onComplete: data => resolve(data),
-        onError: error => reject(error),
-        onSubscribe: cancel => {
-            /* Can't implement onSubscribe in Thenable interface :( */
-        }
-    });
-};
 
 export default App;
