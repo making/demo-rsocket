@@ -1,5 +1,6 @@
 import RSocketWebSocketClient from "rsocket-websocket-client";
 import {RSocketClient} from 'rsocket-core';
+import {Single} from 'rsocket-flowable';
 
 export default class BaseClient {
     constructor({client}) {
@@ -20,20 +21,9 @@ export default class BaseClient {
         });
     }
 
-    connect() {
-        return new Promise((resolve, reject) => {
-            this.client.connect()
-                .subscribe({
-                    onComplete: socket => {
-                        this.socket = socket;
-                        resolve(this.socket);
-                    },
-                    onError: error => reject(error),
-                    onSubscribe: cancel => {
-                        this.cancel = cancel
-                    }
-                });
-        });
+    async connect() {
+        this.socket = await this.client.connect()
+            .toPromise(cancel => this.cancel = cancel);
     }
 
     disconnect() {
@@ -46,3 +36,17 @@ export default class BaseClient {
         return String.fromCharCode(route.length) + route;
     }
 }
+
+Single.prototype.toPromise = function (onSubscribe) {
+    return new Promise((resolve, reject) => {
+        this.subscribe({
+            onComplete: data => resolve(data),
+            onError: error => reject(error),
+            onSubscribe: cancel => {
+                if (onSubscribe) {
+                    onSubscribe(cancel);
+                }
+            }
+        });
+    });
+};
