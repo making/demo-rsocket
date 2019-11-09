@@ -51,7 +51,8 @@ export default class GreetingView extends Component {
     }
 
     componentDidMount() {
-        this.greetingClient.connect();
+        this.greetingClient.connect()
+            .catch(e => console.error('Failed to connect', e));
     }
 
     componentWillUnmount() {
