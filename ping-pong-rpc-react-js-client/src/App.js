@@ -1,56 +1,76 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
-import {RequestHandlingRSocket, RpcClient} from 'rsocket-rpc-core';
-import {PingPongServiceClient} from './proto/pingpong_rsocket_pb';
 import {PingRequest} from './proto/pingpong_pb';
-import {BufferEncoders} from "rsocket-core";
+import {RequestHandlingRSocket, RpcClient} from "rsocket-rpc-core";
 import RSocketWebSocketClient from "rsocket-websocket-client";
+import {BufferEncoders} from "rsocket-core";
+import {PingPongServiceClient} from "./proto/pingpong_rsocket_pb";
 
-function App() {
-    const responder = new RequestHandlingRSocket();
-    const keepAlive = 60000 /* 60s in ms */;
-    const lifetime = 360000 /* 360s in ms */;
-    const transport = new RSocketWebSocketClient({url: 'ws://localhost:9999'}, BufferEncoders);
-    const rsocketClient = new RpcClient({setup: {keepAlive, lifetime}, transport, responder});
-    const pingRequest = new PingRequest().setMessage('PING');
+class App extends Component {
+    constructor(props) {
+        super(props);
+        const responder = new RequestHandlingRSocket();
+        const keepAlive = 60000 /* 60s in ms */;
+        const lifetime = 360000 /* 360s in ms */;
+        const transport = new RSocketWebSocketClient({url: 'ws://localhost:9999'}, BufferEncoders);
+        this.client = new RpcClient({setup: {keepAlive, lifetime}, transport, responder});
+        this.state = {
+            message: ''
+        };
+    }
 
-    let pongServiceClient = null;
-    rsocketClient.connect()
-        .subscribe({
-            onComplete: rsocket => {
-                pongServiceClient = new PingPongServiceClient(rsocket);
-                pongServiceClient.ping(pingRequest).subscribe({
-                    onComplete: data => {
-                        console.log(data.getMessage());
+    componentDidMount() {
+        this.connect()
+            .then(socket => this.pingPongClient = new PingPongServiceClient(socket));
+    }
+
+    connect() {
+        return new Promise((resolve, reject) => {
+            this.client.connect()
+                .subscribe({
+                    onComplete: socket => {
+                        this.socket = socket;
+                        resolve(this.socket);
+                    },
+                    onError: error => {
+                        console.error('Failed to connect!', error);
+                        reject(error);
+                    },
+                    onSubscribe: cancel => {
+                        this.cancel = cancel
                     }
                 });
-            },
-            onError: error => {
-                console.error("Failed to connect to RSocket server.", error);
-            },
-            onSubscribe: cancel => {
-            }
         });
+    }
 
-    return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo"/>
-                <p>
-                    Edit <code>src/App.js</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
-        </div>
-    );
+    ping() {
+        this.setState({
+            message: '...'
+        });
+        if (!this.socket._machine._connectionAvailability) {
+            alert('Connection is closed.');
+            return;
+        }
+        this.pingPongClient
+            .ping(new PingRequest().setMessage('PING'))
+            .subscribe({
+                    onComplete: data => this.setState({message: data.getMessage()}),
+                    onError: error => {
+                        console.error('Failed to ping!', error);
+                        alert('Failed to ping!');
+                    }
+                }
+            );
+    }
+
+    render() {
+        return (
+            <div>
+                <button onClick={this.ping.bind(this)}>Ping</button>
+                <p>{this.state.message}</p>
+            </div>
+        );
+    }
 }
 
 export default App;
