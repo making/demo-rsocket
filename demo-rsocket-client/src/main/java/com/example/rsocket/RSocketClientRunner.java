@@ -1,6 +1,9 @@
 package com.example.rsocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.rsocket.micrometer.MicrometerRSocketInterceptor;
 import io.rsocket.transport.ClientTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +22,10 @@ public class RSocketClientRunner implements ApplicationRunner {
 
     private final RSocketRequester requester;
 
-    public RSocketClientRunner(RSocketRequester.Builder builder, ClientTransport clientTransport) {
-        this.requester = builder.connect(clientTransport).block(Duration.ofSeconds(10));
+    public RSocketClientRunner(RSocketRequester.Builder builder, ClientTransport clientTransport, MeterRegistry meterRegistry) {
+        this.requester = builder
+            .rsocketFactory(rsocketFactory -> rsocketFactory.addRequesterPlugin(new MicrometerRSocketInterceptor(meterRegistry, Tag.of("route", "greeting"))))
+            .connect(clientTransport).block(Duration.ofSeconds(10));
     }
 
     @Override

@@ -1,6 +1,9 @@
 package com.example.rsocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.rsocket.micrometer.MicrometerRSocketInterceptor;
 import io.rsocket.transport.ClientTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +23,10 @@ public class NameController {
 
     private final Mono<RSocketRequester> requesterMono;
 
-    public NameController(RSocketRequester.Builder builder, ClientTransport clientTransport) {
-        this.requesterMono = builder.connect(clientTransport);
+    public NameController(RSocketRequester.Builder builder, ClientTransport clientTransport, MeterRegistry meterRegistry) {
+        this.requesterMono = builder
+            .rsocketFactory(rsocketFactory -> rsocketFactory.addRequesterPlugin(new MicrometerRSocketInterceptor(meterRegistry, Tag.of("route", "name"))))
+            .connect(clientTransport);
     }
 
     @GetMapping(path = "/names", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
